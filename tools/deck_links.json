@@ -1,0 +1,7 @@
+{
+ "10": [
+  {"href": "https://www.decreate.co", "label": "decreate.co", "box": [13.0, 48.6, 7.6, 2.8]},
+  {"href": "mailto:hello@decreate.co", "label": "Email hello@decreate.co", "box": [13.0, 51.7, 11.5, 2.8]},
+  {"href": "https://www.linkedin.com/company/studio-decreate", "label": "decreate on LinkedIn", "box": [13.0, 59.4, 5.4, 2.8]}
+ ]
+}
