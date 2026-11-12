@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>decreate studio deck</title>
+  <meta name="description" content="The decreate studio deck.">
+  <link rel="icon" href="../_framer/images/fOhtHArmQnoNlrpLVnRNOura4n0.svg" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="../_framer/images/IxSka8M9kAk11S7MUpVcTGxAj4.svg" media="(prefers-color-scheme: dark)">
+  <meta property="og:title" content="decreate studio deck">
+  <meta property="og:image" content="slides/1920/slide-01.jpg">
+  <style>
+    :root { --bg: #000; --fg: #ededed; --muted: #8a8a8a; --line: #2a2a2a; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
+      font: 14px/1.4 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    body { display: flex; flex-direction: column; overflow: hidden; }
+    header, footer { display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; padding: 12px 16px; flex: none; }
+    a { color: var(--fg); text-decoration: none; }
+    a:hover, a:focus-visible { text-decoration: underline; }
+    .brand { font-weight: 600; letter-spacing: -0.01em; }
+    .actions { display: flex; gap: 16px; align-items: center; }
+    main { position: relative; flex: 1; min-height: 0; display: flex; align-items: center;
+      justify-content: center; padding: 0 16px; touch-action: pan-y; }
+    main img { max-width: 100%; max-height: 100%; aspect-ratio: 16 / 9; object-fit: contain;
+      display: block; user-select: none; -webkit-user-drag: none; }
+    .nav { position: absolute; top: 0; bottom: 0; width: 30%; background: none; border: 0;
+      cursor: pointer; color: transparent; }
+    .nav.prev { left: 0; } .nav.next { right: 0; }
+    .nav:focus-visible { outline: 2px solid var(--fg); outline-offset: -4px; }
+    .nav:disabled { cursor: default; }
+    #hotspots { position: absolute; z-index: 1; pointer-events: none; }
+    #hotspots a { position: absolute; pointer-events: auto; border-radius: 4px; }
+    #hotspots a:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+    footer { color: var(--muted); font-variant-numeric: tabular-nums; }
+    footer button { background: none; border: 1px solid var(--line); color: var(--fg);
+      border-radius: 999px; padding: 6px 14px; font: inherit; cursor: pointer; }
+    footer button:disabled { color: var(--muted); cursor: default; }
+    footer button:not(:disabled):hover { border-color: var(--muted); }
+    .hint { display: none; }
+    @media (min-width: 810px) { .hint { display: inline; } }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="../">decreate.</a>
+    <div class="actions">
+      <a href="decreate-studio-deck.pdf" download>Download PDF</a>
+      <a href="#" id="fullscreen" role="button">Fullscreen</a>
+    </div>
+  </header>
+  <main id="stage" aria-roledescription="carousel" aria-label="decreate studio deck">
+    <img id="slide" src="slides/1920/slide-01.jpg"
+         srcset="slides/1920/slide-01.jpg 1920w, slides/3840/slide-01.jpg 3840w"
+         sizes="100vw" alt="Slide 1 of 10" width="1920" height="1080">
+    <button class="nav prev" id="prevZone" aria-label="Previous slide" tabindex="-1">Previous</button>
+    <button class="nav next" id="nextZone" aria-label="Next slide" tabindex="-1">Next</button>
+    <div id="hotspots"></div>
+  </main>
+  <footer>
+    <button id="prev" aria-label="Previous slide">&larr;</button>
+    <span><span id="counter" aria-live="polite">1 / 10</span><span class="hint"> &middot; arrow keys to navigate</span></span>
+    <button id="next" aria-label="Next slide">&rarr;</button>
+  </footer>
+  <script>
+    (() => {
+      const COUNT = 10;
+      // Clickable areas per slide, as [left, top, width, height] in percent of the slide.
+      const LINKS = {"10": [{"href": "https://www.decreate.co", "label": "decreate.co", "box": [13.0, 48.6, 7.6, 2.8]}, {"href": "mailto:hello@decreate.co", "label": "Email hello@decreate.co", "box": [13.0, 51.7, 11.5, 2.8]}, {"href": "https://www.linkedin.com/company/studio-decreate", "label": "decreate on LinkedIn", "box": [13.0, 59.4, 5.4, 2.8]}]};
+      const pad = n => String(n).padStart(2, '0');
+      const src = (n, w) => `slides/${w}/slide-${pad(n)}.jpg`;
+      const img = document.getElementById('slide');
+      const counter = document.getElementById('counter');
+      const prevButtons = [document.getElementById('prev'), document.getElementById('prevZone')];
+      const nextButtons = [document.getElementById('next'), document.getElementById('nextZone')];
+      const hotspots = document.getElementById('hotspots');
+      let current = 1;
+
+      function placeHotspots() {
+        const boxW = img.offsetWidth, boxH = img.offsetHeight;
+        const w = Math.min(boxW, boxH * 16 / 9), h = w * 9 / 16;
+        Object.assign(hotspots.style, {
+          left: `${img.offsetLeft + (boxW - w) / 2}px`, top: `${img.offsetTop + (boxH - h) / 2}px`,
+          width: `${w}px`, height: `${h}px`,
+        });
+      }
+
+      function renderHotspots() {
+        hotspots.replaceChildren(...(LINKS[current] || []).map(link => {
+          const a = document.createElement('a');
+          a.href = link.href;
+          a.setAttribute('aria-label', link.label);
+          if (/^https?:/.test(link.href)) { a.target = '_blank'; a.rel = 'noopener'; }
+          const [l, t, w, h] = link.box;
+          Object.assign(a.style, { left: `${l}%`, top: `${t}%`, width: `${w}%`, height: `${h}%` });
+          return a;
+        }));
+        placeHotspots();
+      }
+
+      function fromHash() {
+        const n = parseInt(location.hash.slice(1), 10);
+        return Number.isInteger(n) && n >= 1 && n <= COUNT ? n : 1;
+      }
+
+      function preload(n) {
+        if (n < 1 || n > COUNT) return;
+        const p = new Image();
+        p.sizes = '100vw';
+        p.srcset = `${src(n, 1920)} 1920w, ${src(n, 3840)} 3840w`;
+      }
+
+      function show(n) {
+        current = Math.min(Math.max(n, 1), COUNT);
+        img.srcset = `${src(current, 1920)} 1920w, ${src(current, 3840)} 3840w`;
+        img.src = src(current, 1920);
+        img.alt = `Slide ${current} of ${COUNT}`;
+        counter.textContent = `${current} / ${COUNT}`;
+        prevButtons.forEach(b => { b.disabled = current === 1; });
+        nextButtons.forEach(b => { b.disabled = current === COUNT; });
+        history.replaceState(null, '', `#${current}`);
+        renderHotspots();
+        preload(current + 1);
+        preload(current - 1);
+      }
+
+      prevButtons.forEach(b => b.addEventListener('click', () => show(current - 1)));
+      nextButtons.forEach(b => b.addEventListener('click', () => show(current + 1)));
+      document.addEventListener('keydown', e => {
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); show(current + 1); }
+        else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(current - 1); }
+        else if (e.key === 'Home') show(1);
+        else if (e.key === 'End') show(COUNT);
+        else if (e.key === 'f') toggleFullscreen();
+      });
+      window.addEventListener('hashchange', () => show(fromHash()));
+      window.addEventListener('resize', placeHotspots);
+      img.addEventListener('load', placeHotspots);
+
+      let touchX = null;
+      const stage = document.getElementById('stage');
+      stage.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+      stage.addEventListener('touchend', e => {
+        if (touchX === null) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        touchX = null;
+        if (Math.abs(dx) > 40) show(current + (dx < 0 ? 1 : -1));
+      });
+
+      function toggleFullscreen() {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+      }
+      document.getElementById('fullscreen').addEventListener('click', e => { e.preventDefault(); toggleFullscreen(); });
+
+      show(fromHash());
+    })();
+  </script>
+</body>
+</html>
