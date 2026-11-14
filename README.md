@@ -1,18 +1,18 @@
 # decreate website
 
-A static copy of [www.decreate.co](https://www.decreate.co) (a Framer site, published 1 April 2026) and of the decreate studio deck (a [Figma prototype](https://www.figma.com/proto/3BQu5B2JA1FPW3HpCI5Qjv/decreate)), captured on 12 November 2026 for hosting on GitHub Pages.
+A static copy of [www.decreate.co](https://www.decreate.co) (a Framer site, published 1 April 2026) and of the decreate studio deck (a [Figma prototype](https://www.figma.com/proto/3BQu5B2JA1FPW3HpCI5Qjv/decreate)), captured on 12 November 2026. It is kept for reference and is not published.
 
 ## Layout
 
 | Path | Contents |
 |------|----------|
-| `site/` | Everything GitHub Pages serves |
+| `site/` | The static site |
 | `site/index.html`, `site/404.html` | The Framer pages as published |
 | `site/_framer/` | Framer's JavaScript modules, images and fonts, from framerusercontent.com |
 | `site/_fonts/` | Google Fonts files (Inter, Plus Jakarta Sans) |
 | `site/deck/` | The studio deck: a slide viewer, every slide at 1920 and 3840 pixels wide, and `decreate-studio-deck.pdf` |
 | `tools/` | The scripts that produced `site/` |
-| `.github/workflows/pages.yml` | Publishes `site/` on every push to `main` |
+| `.github/workflows/pages.yml` | Publishes `site/` to GitHub Pages when run by hand |
 
 ## Differences from the live site
 
@@ -32,8 +32,10 @@ Then open http://localhost:8000.
 
 ## Publish
 
+The site is not published, and pushing to `main` publishes nothing. To publish it:
+
 1. In the repository's **Settings → Pages**, set **Build and deployment → Source** to **GitHub Actions**.
-2. Push to `main`. The workflow publishes the site at `https://<owner>.github.io/decreate_website/`.
+2. In the **Actions** tab, run **Deploy site to GitHub Pages**. It publishes `site/` at `https://<owner>.github.io/decreate_website/`.
 3. To serve it at www.decreate.co, enter the custom domain under **Settings → Pages** and point the domain's DNS at GitHub Pages, as GitHub's [custom domain guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site) describes. Until DNS moves, www.decreate.co keeps serving from Framer.
 
 ## Refresh the copy
